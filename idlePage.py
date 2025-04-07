@@ -13,7 +13,7 @@ window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
 last_scan_time = 0
 active = False
-rfid_data = "0010542281"
+rfid_data = "0010516239"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -59,6 +59,7 @@ def on_key_press(event):
                         root.unbind("<Key>")
                         start_neuread_app(rfid_data, root, return_to_idle)
                         print(rfid_data)
+                        
                         rfid_data = ""  # Reset buffer
                         idle_frame.destroy()
                 except Exception as e:

@@ -5,19 +5,6 @@ from datetime import datetime
 import pytz
 from bnd import *
 from io import BytesIO
-def add_corners(im, rad, ww, wh):
-    circle = Image.new('L', (rad * 2, rad * 2), 0)
-    draw = ImageDraw.Draw(circle)
-    draw.ellipse((0, 0, rad * 2 - 1, rad * 2 - 1), fill=(ww * wh))
-    alpha = Image.new('L', im.size, 255)
-    w, h = im.size
-    alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
-    alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h - rad))
-    alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))
-    alpha.paste(circle.crop((rad, rad, rad * 2, rad * 2)), (w - rad, h - rad))
-    im.putalpha(alpha)
-    return im
-
 
 def book_profile(content, bookID):
     for widget in content.winfo_children():
@@ -38,11 +25,11 @@ def book_profile(content, bookID):
 
     time_border = ctk.CTkFrame(profile, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    time_border.place(relx=0.07, rely=0.2, anchor = "center") 
+    time_border.place(relx=0.89, rely=0.05)
 
     date_border = ctk.CTkFrame(profile, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    date_border.place(relx=0.07, rely=0.2, anchor = "center") 
+    date_border.place(relx=0.03, rely=0.05) 
 
     def update_date():
         ph_timezone = pytz.timezone("Asia/Manila")
@@ -65,7 +52,7 @@ def book_profile(content, bookID):
     info.place(relx=0.5, rely=0.55, anchor="center") 
 
     page_label = ctk.CTkLabel(info, text='Book Profile', font=("Arial", 40, "bold"), text_color="blue")
-    page_label.place(relx=0.5, rely=0.05, anchor='center')
+    page_label.place(relx=0.19, rely=0.075, anchor='center')
 
     book_cover = ctk.CTkLabel(info, text='', image=book_cover_image)
     book_cover.place(relx=0.0855, rely=0.12)

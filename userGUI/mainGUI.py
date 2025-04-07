@@ -18,13 +18,13 @@ from PIL import Image, ImageTk
 import tkinter.font as tkFont
 from user_Profile import Main_user_page
 from borrow_return import Main_borrow_return_page
-from search import Main_search_page
 from history import Main_history_page
 from rules_regulation import initiateMainReg
 from exit_function import Main_exit_page
 import sys
 import os
 from bnd import *
+from genrePage import *
 def start_neuread_app(RFID, root, return_to_idle):
     # Main Containers
     container = tk.Frame(root)
@@ -64,7 +64,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=1)
 
-    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_search_page(content, root), image=button3_icon, compound='top', fg_color='#5088FC', border_width=0, hover_color="#0067D9")
+    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: genre_pick(content, root), image=button3_icon, compound='top', fg_color='#5088FC', border_width=0, hover_color="#0067D9")
     button3.image = button3_icon
     button3.pack(fill='x', expand=True, pady=1)
 
