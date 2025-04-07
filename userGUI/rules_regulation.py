@@ -56,13 +56,17 @@ def Main_rules_page(content):
     date_border.place(relx=0.03, rely=0.05)
 
     def update_date():
-        ph_timezone = pytz.timezone("Asia/Manila")
-        current_time = datetime.now(ph_timezone)
-        formatted_date = current_time.strftime("%B %d, %Y")
-        formatted_time = current_time.strftime("%I:%M %p")
-        date_label.configure(text=formatted_date)
-        time_label.configure(text=formatted_time)
-        content.after(1000, update_date)
+        try: 
+            ph_timezone = pytz.timezone("Asia/Manila")
+            current_time = datetime.now(ph_timezone)
+            formatted_date = current_time.strftime("%B %d, %Y")
+            formatted_time = current_time.strftime("%I:%M %p")
+            date_label.configure(text=formatted_date)
+            time_label.configure(text=formatted_time)
+            content.after(1000, update_date)
+        except tk.TclError:
+        # Widget has been destroyed, stop updating
+            return
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
     date_label.place(relx=0.5, rely=0.5, anchor = "center") 
@@ -96,6 +100,7 @@ def Main_rules_page(content):
     text_widget.insert(tk.END, policies_text)
     text_widget.config(state=tk.DISABLED)  # Make text widget read-only
     text_widget.place(relx=0.02, rely=0.16, relwidth=0.96, relheight=0.75)  # Adjusted placement
+    create_navigation_buttons(content)
 
 # BORROW PAGE
 def show_borrowing_privileges_page(content):
@@ -135,7 +140,7 @@ def show_fno_page(content):
     #fines TEXT
     f_text = """Materials returned late are subject to overdue fines
 
-• General Circalation books
+• General Circulation books
 - Php 10.00 per day (Sundays and holidays inclusive)
 
 • Reserve Books
@@ -230,11 +235,7 @@ library. Making/answering calls should be done outside the library.
     text_widget.config(state=tk.DISABLED)  # Make text widget read-only
     text_widget.place(relx=0.02, rely=0.16, relwidth=0.96, relheight=0.75)  # Adjust placement inside canvas
 def initiateMainReg(content):
-    for widget in content.winfo_children():
-        if isinstance(widget, tk.Frame):
-            widget.destroy()
     Main_rules_page(content)
-    create_navigation_buttons(content)
 #BORROW RULES
 #FINES
 #OFFENSES

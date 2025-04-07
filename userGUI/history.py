@@ -45,6 +45,7 @@ def Main_history_page(content, RFID):
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
     time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
+    
     title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), text_color="#5088FC")
     title_label.place(relx=0.5, rely=0.15, anchor="center")
     

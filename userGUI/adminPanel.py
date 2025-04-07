@@ -284,9 +284,9 @@ def open_book_form():
     # If already open, focus and return
     if popup_window_create is not None and popup_window_create.winfo_exists():
         return
-    form = ctk.CTkToplevel()
+    form = tk.Toplevel()
     popup_window_create = form
-    form.geometry("700x450")
+    form.geometry("720x450")
     form.title("Add Book Entry")
     form.lift()  # Bring the form to the front
     form.attributes('-topmost', 1)
@@ -298,9 +298,9 @@ def open_book_form():
     ]
 
     for i, (field, _) in enumerate(fields):
-        label = ctk.CTkLabel(form, text=field)
+        label = ctk.CTkLabel(form, text=field, text_color="#5088FC", font=("Arial", 16, "bold"))
         label.grid(row=i, column=0, padx=10, pady=5, sticky='e')
-        entry = ctk.CTkEntry(form, width=400)
+        entry = ctk.CTkEntry(form, width=400, border_color="#89AEFD", fg_color="#5088FC")
         entry.grid(row=i, column=1, padx=10, pady=5)
         entries[field] = entry
 
@@ -310,9 +310,9 @@ def open_book_form():
         image_path_var.set(file_path)
 
     image_path_var = ctk.StringVar()
-    ctk.CTkLabel(form, text="Book_Cover").grid(row=len(fields), column=0, padx=10, pady=5, sticky='e')
-    ctk.CTkEntry(form, textvariable=image_path_var, width=300, state="readonly").grid(row=len(fields), column=1, padx=10, pady=5, sticky='w')
-    ctk.CTkButton(form, text="Browse", command=choose_image).grid(row=len(fields), column=2, padx=5)
+    ctk.CTkLabel(form, text="Book_Cover", text_color="#5088FC", font=("Arial", 16, "bold")).grid(row=len(fields), column=0, padx=10, pady=5, sticky='e')
+    ctk.CTkEntry(form, textvariable=image_path_var, width=300, state="readonly", border_color="#89AEFD", fg_color="#5088FC").grid(row=len(fields), column=1, padx=10, pady=5, sticky='w')
+    ctk.CTkButton(form, text="Browse", command=choose_image, fg_color="#5088FC", hover_color="#1565C0", text_color="white", font=("Arial", 16, "bold")).grid(row=len(fields), column=2, padx=5)
 
     # Submit button
     def submit():
@@ -338,7 +338,7 @@ def open_book_form():
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while adding the book: {str(e)}")
 
-    submit_btn = ctk.CTkButton(form, text="Submit", command=submit)
+    submit_btn = ctk.CTkButton(form, text="Submit", command=submit, fg_color="#5088FC", hover_color="#1565C0", text_color="white", font=("Arial", 16, "bold"))
     submit_btn.grid(row=len(fields)+1, column=1, pady=20)
     def on_close():
         global popup_window_delete
@@ -354,14 +354,14 @@ def open_delete_book_form():
         popup_window_delete.focus()
         return
 
-    popup_window_delete = ctk.CTkToplevel()
-    popup_window_delete.geometry("500x500")
+    popup_window_delete = tk.Toplevel()
+    popup_window_delete.geometry("1200x500")
     popup_window_delete.title("Delete Book")
     popup_window_delete.attributes('-topmost', True)
 
     # Search Entry
-    ctk.CTkLabel(popup_window_delete, text="Enter Book ID to search:").pack(pady=10)
-    book_id_entry = ctk.CTkEntry(popup_window_delete)
+    ctk.CTkLabel(popup_window_delete, text="Enter Book ID to search:", font=("Arial", 18, "bold"), text_color="#5088FC").pack(pady=10)
+    book_id_entry = ctk.CTkEntry(popup_window_delete, width=400, height=40, fg_color="white", text_color="black", border_color="#5088FC", font=("Arial", 16))
     book_id_entry.pack()
 
     # Display Frame
@@ -371,7 +371,7 @@ def open_delete_book_form():
     # Labels to show book data
     labels = {}
     for field in ["Book_ID", "Title", "Author", "Description", "Availability", "Genre", "Year_Publication", "Book_Address"]:
-        lbl = ctk.CTkLabel(display_frame, text=f"{field}: ", font=("Arial", 25, "bold"), anchor='w')
+        lbl = ctk.CTkLabel(display_frame, text=f"{field}: ", font=("Arial", 25, "bold"), text_color="white", anchor='w')
         lbl.pack(fill='x', padx=10, pady=2)
         labels[field] = lbl
 
@@ -408,6 +408,6 @@ def open_delete_book_form():
             delete_btn.configure(state="disabled")
             for lbl in labels.values():
                 lbl.configure(text="")
-    ctk.CTkButton(popup_window_delete, text="Search", command=search_book, fg_color="#5088FC").pack(pady=10)
-    delete_btn = ctk.CTkButton(popup_window_delete, text="Delete Book", command=delete_book, fg_color="#FF5A5F", state="disabled")
+    ctk.CTkButton(popup_window_delete, text="Search", command=search_book, fg_color="#5088FC", text_color="white", font=("Arial", 20, "bold")).pack(pady=10)
+    delete_btn = ctk.CTkButton(popup_window_delete, text="Delete Book", command=delete_book, fg_color="#FF5A5F", text_color="white", state="disabled", font=("Arial", 20, "bold"))
     delete_btn.pack(pady=10)

@@ -19,12 +19,11 @@ class CTkOnScreenKeyboard:
         self.entry = entry
         self.master = master
 
-        self.top = ctk.CTkToplevel(master)
+        self.top = tk.Toplevel(master)
         self.top.title("Keyboard")
-        self.top.geometry("600x250")
-        self.top.attributes('-topmost', True)
+        self.top.geometry("900x290")
         self.top.resizable(False, False)
-        self.top.wm_attributes('-toolwindow', True)
+        #self.top.wm_attributes('-toolwindow', True)
 
         self.top.protocol("WM_DELETE_WINDOW", self.on_close)
 
@@ -45,15 +44,15 @@ class CTkOnScreenKeyboard:
         for r, row in enumerate(keys):
             for c, key in enumerate(row):
                 if key == "Space":
-                    btn = ctk.CTkButton(self.keyboard_frame, text="␣", width=400, command=lambda: self.insert_char(" "))
+                    btn = ctk.CTkButton(self.keyboard_frame, text="␣", width=500, height=40, command=lambda: self.insert_char(" "), font=("Arial", 35), fg_color="#5088FC")
                     btn.grid(row=r, column=0, columnspan=10, pady=4)
                 elif key == "Back":
-                    btn = ctk.CTkButton(self.keyboard_frame, text="⌫", width=50, command=self.backspace)
+                    btn = ctk.CTkButton(self.keyboard_frame, text="⌫", width=75, height=50, command=self.backspace, font=("Arial", 25), fg_color="#5088FC")
                     btn.grid(row=r, column=c, padx=1, pady=4)
                 else:
-                    btn = ctk.CTkButton(self.keyboard_frame, text=key, width=50,
-                                        command=lambda k=key: self.insert_char(k))
-                    btn.grid(row=r, column=c, padx=2, pady=4)
+                    btn = ctk.CTkButton(self.keyboard_frame, text=key, width=75, height=50,
+                                        command=lambda k=key: self.insert_char(k), font=("Arial", 25), fg_color="#5088FC")
+                    btn.grid(row=r, column=c, padx=2.5, pady=4)
 
     def insert_char(self, char):
         self.entry.insert("end", char)
