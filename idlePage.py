@@ -87,3 +87,4 @@ create_idle_page()
 check_time()
 # Run the application
 root.mainloop()
+
