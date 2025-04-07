@@ -28,6 +28,34 @@ secondSectionNum = 0
 book_buttons = []
 
 def book_search(content, genresnum):
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
+    ww = content.winfo_screenwidth()
+    wh = content.winfo_screenheight()
+    time_border = ctk.CTkFrame(content, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    time_border.place(relx=0.89, rely=0.05)
+
+    date_border = ctk.CTkFrame(content, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    date_border.place(relx=0.03, rely=0.05)
+
+    def update_date():
+        ph_timezone = pytz.timezone("Asia/Manila")
+        current_time = datetime.now(ph_timezone)
+        formatted_date = current_time.strftime("%B %d, %Y")
+        formatted_time = current_time.strftime("%I:%M %p")
+        date_label.configure(text=formatted_date)
+        time_label.configure(text=formatted_time)
+        content.after(1000, update_date)
+
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
+    date_label.place(relx=0.07, rely=0.2)
+
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
+    time_label.place(relx=0.07, rely=0.2)
+    update_date()
 
     global genres, book_buttons, firstSectionNum, secondSectionNum
     firstSectionNum = 0
@@ -94,24 +122,10 @@ def book_search(content, genresnum):
     next_image = load_image("next.png", size=(40, 40))
     back_image = load_image("back.png", size=(40, 40))
 
-    # Create search page frame
-    search_border = ctk.CTkFrame(content, width=800, height=85, bg_color="white", fg_color='white', corner_radius=15)
-    search_border.place(relx=0.5, rely=0.1, anchor='center')
-
-    # Create the search bar entry inside the border
-    search_bar = ctk.CTkEntry(search_border, width=750, height=70, corner_radius=30, bg_color='white', fg_color='white',
-                              text_color="black", placeholder_text="Search bar", font=("Arial", 20))
-    search_bar.place(relx=0.5, rely=0.5, anchor="center")
-    search_bar.bind("<Button-1>", lambda event: open_keyboard(content, search_bar, event))
-
-    search_button = ctk.CTkButton(search_bar, text='', image=search_image, width=75, fg_color='white',
-                                  command=lambda: searchBooks("Title", search_bar.get(), 6, 0))
-    search_button.place(relx=0.98, rely=0.5, anchor='e')
-
     # Frame for displaying books
     books = ctk.CTkFrame(content, width=1400, height=650, fg_color="white", bg_color="white",
                          corner_radius=20, border_width=15, border_color="White")
-    books.place(relx=0.5, rely=0.55, anchor="center")
+    books.place(relx=0.5, rely=0.50, anchor="center")
 
     genre_label = ctk.CTkLabel(books, text=genre, font=("Arial", 30, "bold"), text_color="Blue")
     genre_label.place(relx=0.06, rely=0.1, anchor="w")
@@ -171,71 +185,3 @@ def book_search(content, genresnum):
             # Fetch books from two genres
     firstSection(genre, 0, "firstSectionNum", next_btn, prev_btn)
     firstSection(genre, 0, "secondSectionNum", next_btn, prev_btn)
-
-    ### SA MAY LITERAL NA SEARCH NAMAN ############   
-
-    def searchTitle(searchedItem, num):
-        # intialize sets and arrays
-        seen_ids = set() # tracking duplicates, based on sa Book ID
-        combinedBookArray = [] # to combine results from title and author search
-        for widget in books.winfo_children():
-            widget.destroy()
-    
-    # Try to search by title first
-        bookArray_Title = searchBooks("Title", searchedItem, 6, num)
-    
-    # Then search by author
-        bookArray_Author = searchBooks("Author", searchedItem, 6, num)
-    
-    # for title results first
-        for book in bookArray_Title:
-            book_id = book[0]  # First element is the book ID, grab for checking duplicates
-            if book_id not in seen_ids:
-                # bnd showBooks function, grab ID, Blob, Title and Availability
-                rearranged_book = (book[0], book[2], book[3], book[4])  # ID, Blob, Title, Availability
-                combinedBookArray.append(rearranged_book)
-                seen_ids.add(book_id) # add to list IDs seen
-    
-    # for author results
-        for book in bookArray_Author:
-            book_id = book[0]  
-        if book_id not in seen_ids:
-            rearranged_book = (book[0], book[2], book[3], book[4])  # ID, Blob, Title, Availability
-            combinedBookArray.append(rearranged_book)
-            seen_ids.add(book_id)
-    
-    # Para malaman if search worked or not (totes for design)
-        search_header = ctk.CTkLabel(books, text=f"Search Results for: '{searchedItem}'", 
-                              font=("Arial", 30, "bold"), text_color="Blue")
-        search_header.place(relx=0.06, rely=0.1, anchor="w")
-    
-    # for debuggingggg
-    
-        print("length of the books Searched: ", len(combinedBookArray))
-    
-    # Show first 3 books
-        if len(combinedBookArray) > 0:
-            showBooks(combinedBookArray[0:3], 0.33)
-    
-    # Show next 3 books if available
-        if len(combinedBookArray) > 3:
-            print("extending")
-            showBooks(combinedBookArray[3:6], 0.76)
-    
-        if len(combinedBookArray) > num + 6:
-            search_next_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", 
-                                         command=lambda: searchTitle(searchedItem, (num + 6)))
-            search_next_button.place(relx=0.92, rely=0.09, anchor='center')
-    
-        if num >= 6:
-            search_back_button = ctk.CTkButton(books, text='', image=back_image, bg_color="white", width=50, fg_color="white", 
-                                         command=lambda: searchTitle(searchedItem, (num - 6)))
-            search_back_button.place(relx=0.86, rely=0.09, anchor='center')
-
-    def enterSearch():
-        close()
-        input = search_bar.get()
-        searchTitle(input, 0)
-
-    search_button = ctk.CTkButton(search_bar, text='', image=search_image, width=75, fg_color='white', command=enterSearch)
-    search_button.place(relx=0.98, rely=0.5, anchor='e')
