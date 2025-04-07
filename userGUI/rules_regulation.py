@@ -135,7 +135,7 @@ def show_fno_page(content):
     #fines TEXT
     f_text = """Materials returned late are subject to overdue fines
 
-• General Circalation books
+• General Circulation books
 - Php 10.00 per day (Sundays and holidays inclusive)
 
 • Reserve Books
