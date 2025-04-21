@@ -84,6 +84,28 @@ def penalty(RFID, num):
     if penalty != num:
         mycursor.execute("UPDATE users SET Penalty = %s WHERE RFID = %s", (num, RFID))
         db.commit()
+def emailPenalty(RFID):
+    mycursor.execute("SELECT Email FROM users WHERE RFID = %s", (RFID,))
+    gmail = mycursor.fetchone()[0]
+    mycursor.execute("""
+    SELECT 
+        Date_Borrowed,
+        Book_Title,
+        DATEDIFF(CURDATE(), Date_Borrowed) AS Days_Borrowed
+    FROM 
+        borrowed_books 
+    WHERE 
+        RFID = %s AND Date_returned IS NULL;
+""", (RFID,))
+    result = mycursor.fetchall()
+    for deadline, book_title, days in result:
+        print(f"Deadline: {deadline.strftime('%Y-%m-%d %H:%M')}")
+        print(f"Gmail: {gmail}")
+        print(f"Book Title: {book_title}")
+        print(f"Days: {days}")
+        print("-" * 40)
+        send_Penalty_Info(gmail, deadline, book_title, days)
+    print(result)
 def showGenres(nthTo, nthFrom):
     mycursor.execute("SELECT DISTINCT `Genre` FROM books LIMIT %s OFFSET %s", (nthTo, nthFrom))
     return mycursor.fetchall()
@@ -96,7 +118,11 @@ def adminCheck(RFID):
     
     return result is not None and result[0] == "Admin"
 def addBorrowBook(RFID, Book_ID, Date_Borrowed, Deadline, Date_returned):
-    mycursor.execute("INSERT INTO borrowed_books (RFID, Book_ID, Date_Borrowed, Deadline, Date_returned) VALUES (%s, %s, %s, %s, %s)", (RFID, Book_ID, Date_Borrowed, Deadline, Date_returned))
+    mycursor.execute("SELECT Name FROM users WHERE RFID = %s", (RFID))
+    Name = mycursor.fetchone()
+    mycursor.execute("SELECT Title FROM books WHERE Book_ID = %s", (Book_ID))
+    Title = mycursor.fetchone()
+    mycursor.execute("INSERT INTO borrowed_books (RFID, Borrower_Name, Book_ID, Book_Title, Date_Borrowed, Deadline, Date_returned) VALUES (%s, %s, %s, %s, %s, %s, %s)", (RFID, Name, Book_ID, Title, Date_Borrowed, Deadline, Date_returned))
     mycursor.execute(
         "UPDATE books SET availability = 0 WHERE Book_ID = %s",
         (Book_ID,)
@@ -147,11 +173,12 @@ def showWhoToEmail():
         send_Deadline_Info(email)
     return listGmail
 def WhoToPenalize():
-    mycursor.execute("SELECT RFID FROM borrowed_books WHERE date_returned IS NULL AND DATE(Deadline) >= CURDATE();")
+    mycursor.execute("SELECT RFID FROM borrowed_books WHERE date_returned IS NULL AND Deadline <= CURDATE() AND Borrower_Name IS NOT NULL;")
     borrow_IDs = mycursor.fetchall()
+    print(borrow_IDs)
     for row in borrow_IDs:
         rfid = row[0]  # Assuming RFID is in the second column
-        print(rfid)
+        print("PENALIZE: ", rfid)
         penalty(rfid, 1)
     return borrow_IDs
 def getUserAndBookNum():
@@ -269,10 +296,13 @@ def ifTheyExceedBorrow(RFID):
     return borrowed_count >= 2
 def checkPenalty(RFID):
     mycursor.execute("SELECT Penalty FROM users WHERE RFID = %s", (RFID,))
-    penalty = mycursor.fetchone()[0]
-    if penalty == 1:
-        return True
-    else:
+    try:
+        penalty = mycursor.fetchone()[0]
+        if penalty == 1:
+            return True
+        else:
+            return False
+    except:
         return False
 def is_connected(host="8.8.8.8", port=53, timeout=3):
     """

@@ -10,6 +10,7 @@ ww = None
 wh = None
 rfid_data = ""
 adminRFID = False
+bookRFID = False
 userRFID = None
 initialUser = None
 bookID = None
@@ -26,9 +27,10 @@ userIcon = None
 bookPart = None
 adminPart = None
 userPart = None
+inst_label = None
 def Main_borrow_return_page(content, userID, main):
-    global initialUser, purpose, ww, wh, rfid_data, adminRFID, userRFID, bookID, Title, last_scan_time
-    global topLabel, bottomLabel, bookIcon, adminIcon, userIcon, bookPart, adminPart, userPart
+    global initialUser, purpose, ww, wh, rfid_data, adminRFID, bookRFID, userRFID, bookID, Title, last_scan_time
+    global topLabel, bottomLabel, bookIcon, adminIcon, userIcon, bookPart, adminPart, userPart, inst_label
     
     ww = content.winfo_screenwidth()
     wh = content.winfo_screenheight()
@@ -36,13 +38,15 @@ def Main_borrow_return_page(content, userID, main):
     purpose = None
     rfid_data = ""
     adminRFID = False
+    bookRFID = False
     userRFID = None
     bookID = None
     Title = None
     last_scan_time = 0
     topLabel = None
     bottomLabel = None
-    
+    inst_label = None
+
     bookIcon = None
     adminIcon = None
     userIcon = None
@@ -117,7 +121,7 @@ ON_user_profile = open("userBlue.png", "rb")
 
 # place here for all photo images
 def borrow_page(content, root, pressedPurpose):
-    global purpose, topLabel,bottomLabel, bookIcon, adminIcon, userIcon, ww, wh, bookPart, adminPart, userPart
+    global purpose, topLabel,bottomLabel, bookIcon, adminIcon, userIcon, ww, wh, bookPart, adminPart, userPart, inst_label
     purpose = pressedPurpose
     bors = tk.Frame(content)
     bors.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -182,15 +186,7 @@ def borrow_page(content, root, pressedPurpose):
                            font=("Arial", 20), text_color="Black")
     inst_label.place(relx=0.5, rely=0.75, anchor="center")
 
-    # Create the search bar entry inside the border
-    book_id_entry = ctk.CTkEntry(bors, width=750, height=70, corner_radius=50, fg_color='white',
-                              text_color="black", placeholder_text="Enter Book ID", font=("Arial", 20))
-    book_id_entry.bind("<Button-1>", lambda event: open_keyboard(root, book_id_entry, event))
-
-    book_id_entry.place(relx=0.5, rely=0.8, anchor='center')
-
-    entry_button = ctk.CTkButton(book_id_entry, text='', image=search_image, width=(0.05 * ww), fg_color='white', command= lambda: save_input(book_id_entry, inst_label, content, root))
-    entry_button.place(relx=0.97, rely=0.5, anchor='e')
+    root.bind("<Key>", lambda event: keyPressed(event, content, root)) #ENTER RFID NA
 
     cancel_button = ctk.CTkButton(bors, text='CANCEL', height=50, width=(0.05 * ww), fg_color='blue', font=("Arial", 25, "bold"), command = lambda: Main_borrow_return_page(content, userRFID, root), 
                                   text_color="White", corner_radius=20)
@@ -219,39 +215,44 @@ def successNotif(success, content, root):
     notif.place(relx= 0.5, rely=0.7, anchor= "center")  # Show the label
     root.after(3000, lambda: notif_frame.destroy())
 
-def save_input(book_id_entry, inst_label, content, root):
-    global bookID, Title, ww, wh, initialUser
-    book_id = book_id_entry.get()
+def save_input(book_id, inst_label, content, root):
+    global bookID, Title, ww, wh, initialUser, rfid_data
     penalty = checkPenalty(initialUser)
     if penalty:
         errorNotif("You have Penalty", content, root)
+        rfid_data = ""
         return
     search_result = searchBookID(book_id)
     if not search_result:
         errorNotif("Book ID doesnt exist", content, root)
+        rfid_data = ""
         return
     if purpose == "Borrow" and search_result[0][3] != 1:
         errorNotif("Book is currently unavailable", content, root)
+        rfid_data = ""
         return
     exceeds = ifTheyExceedBorrow(initialUser)
     if purpose == "Borrow" and exceeds:
         errorNotif("exceeded the limit of borrowing", content, root)
+        rfid_data = ""
         return
     hasTheBook = ifTheyHaveTheBook(book_id, initialUser)
     if purpose == "Return" and not hasTheBook:
         errorNotif("You're not the one who borrowed the book", content, root)
+        rfid_data = ""
         return
     if (search_result[0][3] != 0 and purpose == "Return"):
         errorNotif("Book is already available", content, root)
+        rfid_data = ""
         return
     
     print(f"Book ID Entered: {search_result[0][0]}", ", kukuhain na admin")
-    book_id_entry.place_forget()
     inst_label.place_forget()
     bookID = book_id
     Title = search_result[0][0]
     close()
     getAdmin(content, root, search_result[0][0])
+    rfid_data = ""
 
 def getAdmin(content, root, Title):
     global topLabel, bookIcon, adminIcon, ww, wh, bookPart, adminPart, bottomLabel, purpose
@@ -344,19 +345,24 @@ def is_rfid_scan():
 
 
 def keyPressed(event, content, root):
-    global rfid_data, adminRFID, userRFID, initialUser
+    global rfid_data, bookID, adminRFID, userRFID, initialUser, inst_label
     
     #if not is_rfid_scan():
         #return  # Ignore manual keyboard input
     print("pressed key")
     if event.keysym == "Return":
-        if rfid_data and not adminRFID:
+        if rfid_data and bookID == None:
+            print("RUNNING HERE")
+            string_data = str(rfid_data)
+            save_input(rfid_data, inst_label, content, root)
+        if rfid_data and bookID:
             string_data = str(rfid_data)
             print(adminCheck(string_data), string_data)
             if adminCheck(string_data):
                 print(f"ADMIN Entered")
                 adminRFID = True
                 getUser()
+                return
             else:
                 errorNotif("Admin not found", content, root)
             rfid_data = ""  # Reset buffer
@@ -367,6 +373,7 @@ def keyPressed(event, content, root):
                 successNotif("please wait for the Pop-up screen", content, root)
                 root.after(100, lambda: completeTransaction(rfid_data, content, root))
                 print(f"User Entered: {user[0][0][1]}")
+                return
             else:
                 rfid_data = ""
                 errorNotif("Incorrect User", content, root)

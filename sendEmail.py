@@ -63,6 +63,52 @@ def send_Deadline_Info(RECIPIENT_EMAIL, title, deadline):
 </html>
 """
     emailSend(SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL, subject, body)
+def send_Penalty_Info(RECIPIENT_EMAIL, deadline, book_title, days):
+    # Email Credentials
+    SENDER_EMAIL = "neuread.neuis@gmail.com"
+    SENDER_PASSWORD = "agiv uhqq tlhg sjre"
+    print(RECIPIENT_EMAIL)
+    subject = "PENALTY NOTICE"
+    body = f"""\
+<html>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px;">
+  <div style="max-width: 600px; margin: auto; background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+    
+    <h2 style="color: #c0392b; text-align: center;">📚 PENALTY NOTICE</h2>
+    
+    <p>Hello, <strong>Eranian</strong>! 👋</p>
+
+    <p>
+      You have been penalized due to an overdue book on your account. Here are the details:
+    </p>
+
+    <ul style="line-height: 1.6;">
+      <li><strong>Book:</strong> <em>{book_title}</em></li>
+      <li><strong>Due Date:</strong> <code>{deadline}</code></li>
+    </ul>
+
+    <p>
+      As of today, you have a <strong style="color: red;">₱{(days - 3) * 10}</strong> fine.
+    </p>
+
+    <p>
+      Please return the book as soon as possible to avoid extra fees.
+    </p>
+
+    <p>Enjoy your reading! 📖</p>
+
+    <hr style="margin-top: 30px;">
+        <hr style="border: 1px solid #ccc; margin-top: 20px;">
+        <div style="text-align: center; padding-top: 10px;">
+            <img src="cid:footer_img" style="display: block; width: 100%; height: auto; margin: 0 auto;">
+            <p style="color: gray; font-size: 14px;">NEURead Library System | © 2025 New Era University</p>
+        </div>
+  </div>
+</body>
+</html>
+"""
+    print("EMAIL SENTTTT", body)
+    emailSend(SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL, subject, body)
 
 def emailSend(SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL, subject, body):
     msg = MIMEMultipart()
