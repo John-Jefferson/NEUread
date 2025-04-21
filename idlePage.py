@@ -13,7 +13,8 @@ window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
 last_scan_time = 0
 active = False
-rfid_data = "0010516239"
+rfid_data = "0011172599"
+WhoToPenalize()#Penalize kung sino need
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -26,7 +27,7 @@ def create_idle_page():
     bg_label = tk.Label(idle_frame, image=bg_photo)
     bg_label.image = bg_photo  # Keep a reference to avoid garbage collection
     bg_label.place(relwidth=1, relheight=1)
-    WhoToPenalize()#Penalize kung sino need
+    
     # Bind key events to capture RFID input
     root.bind("<Key>", on_key_press)
 
@@ -57,6 +58,9 @@ def on_key_press(event):
                         active = True
                         print(f"RFID Scanned: {rfid_data}")
                         root.unbind("<Key>")
+                        if checkPenalty(rfid_data):
+                            print("May penalty to boss")
+                            emailPenalty(rfid_data)
                         start_neuread_app(rfid_data, root, return_to_idle)
                         print(rfid_data)
                         

@@ -58,7 +58,7 @@ def genre_pick(content, root):
     time_label.place(relx=0.07, rely=0.2)
     update_date()
 
-    genres = ctk.CTkFrame(genres_page, width=1400, height=650, fg_color="white", corner_radius=20, border_width=15, border_color="white")
+    genres = ctk.CTkFrame(genres_page, width=ww, height=650, fg_color="white", corner_radius=20, border_width=15, border_color="white")
     genres.place(relx=0.5, rely=0.55, anchor="center")
 
     # Genre Buttons
